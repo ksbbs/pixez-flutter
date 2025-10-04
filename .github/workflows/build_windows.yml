@@ -58,6 +58,21 @@ jobs:
           path: build/windows/x64/runner/Release/**/*
           compression-level: 9
 
+      - name: 安装 NSIS
+        shell: pwsh
+        run: choco install nsis -y
+
+      - name: 打包成单一 EXE
+        shell: pwsh
+        run: makensis windows/pixez.nsi
+
+      - name: 上传 EXE Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer
+          path: pixez-installer.exe
+          compression-level: 9
+
       - name: 生成校验和
         shell: pwsh
         run: |-
@@ -65,3 +80,4 @@ jobs:
           Write-Output '|File|SHA256|' >> $env:GITHUB_STEP_SUMMARY
           Write-Output '|:-|:-:|' >> $env:GITHUB_STEP_SUMMARY
           Write-Output "|[binary](${{ steps.binary-artifact.outputs.artifact-url }})|${{ steps.binary-artifact.outputs.artifact-digest }}|" >> $env:GITHUB_STEP_SUMMARY
+          Write-Output "|[installer](${{ steps.installer.outputs.artifact-url }})|${{ steps.installer.outputs.artifact-digest }}|" >> $env:GITHUB_STEP_SUMMARY
